@@ -80,15 +80,61 @@ assy_data <-
   select(-cuts, -total) %>%
   ungroup() 
 
-# Build UI ####
 last_updated <- file.info("app.R")$mtime
 
+# Build UI ####
+# Title banner UI
+title_banner <- function(title_text = "Assembly-Based Product Composition Calculator",
+                         subtitle_text = "Gibby's Sustainability Solutions",
+                         banner_color = "#2C3E50",
+                         logo_path = "logo.png") {
+  
+  tags$div(
+    style = paste0("display: flex; align-items: center; 
+                   justify-content: space-between;",
+                   "background-color:", banner_color, "; 
+                   color: white; padding: 15px 20px;"),
+    
+    # Logo
+    tags$img(src = logo_path, height = "200px"),
+    
+    # Title + subtitle centered
+    tags$div(
+      style = "text-align: left; flex-grow: 1;",
+      tags$h1(title_text, style = "margin: 20px; margin-bottom: 0px; 
+              font-size: 50px;"),
+      tags$h4(subtitle_text, style = "margin: 20px; margin-top: 5px; 
+      margin-bottom: 20px; font-size: 44px; 
+              font-weight: normal; font-style: italic;")
+    ),
+    
+    # Right spacer to keep title centered
+    tags$div(style = "width: 50px;")
+  )
+}
+
 ui <- fluidPage(
+  # Banner at top
+  title_banner(
+    banner_color = "#FF46A2",      
+    logo_path = "logo.png"          
+  ),
+  br(),
+  # Disclaimer panel
+  wellPanel(
+    style = "background-color: #f8f9fa; border-left: 5px solid #FF46A2; 
+           padding: 10px; padding-bottom: 10px; margin-top: 20px;",
+    tags$p(
+      tags$strong("Note: "), 
+      "This is a sanitized demo version built using simulated data and generalized product structures.",
+      style = "word-wrap: break-word; word-break: break-word; margin: 0;"
+    )
+  ),
   useShinyjs(),
   tags$head(
     tags$style(HTML("
       #sidebarPanel {
-        background-color: #FF69B4; 
+        background-color: #FF46A2; 
         color: white;
         padding: 1rem;
         border-radius: 0.3rem;
@@ -103,7 +149,7 @@ ui <- fluidPage(
     .selectize-input {
       background-color: white !important;
       color: black !important;
-      border: 1px solid #FF69B4;
+      border: 1px solid #FF46A2;
     }
 
     /* Style dropdown options */
@@ -114,27 +160,25 @@ ui <- fluidPage(
 
     /* Highlight selected item */
     .selectize-dropdown .active {
-      background-color: #FFC0CB !important;
+      background-color: #FF9FCF !important;
       color: white !important;
     }
     
     /* Style for the selected item in the dropdown */
     .selectize-dropdown .selected {
-      background-color: #FF69B4 !important;
+      background-color: #FF46A2 !important;
       color: white !important;
     }
 
     "))
   ),
-  ## White space above page
-  div(style = "height: 40px; background-color: white; width: 100%;"),
   
   ## Universal Inputs ####
   sidebarLayout(
     sidebarPanel(
       tags$h2("Assembly Configuration",
               style = "color: white; font-weight: bold; text-align: center; 
-                  margin-top: 5px; margin-bottom: 25px;"),
+                  margin-top: 5px; margin-bottom: 18px; font-size: 24px"),
       tags$script(HTML("Shiny.addCustomMessageHandler('weightEdited', 
       function(message) {
       Shiny.setInputValue('weightWasEdited', true, {priority: 'event'});
@@ -163,16 +207,16 @@ ui <- fluidPage(
                      max = 100),
         numericInput("ModsWide", "Modular Units Wide", value = 1, min = 1,
                      max = 100),
-        selectInput("Assy1", "Assembly 1 Options", 
+        selectInput("Assy1", "Assembly 1 Selection", 
                     choices = c("--", "Assembly 1A", "Assembly 1B", 
                                 "Assembly 1C")),
-        selectInput("Assy2", "Assembly 2 Options", 
+        selectInput("Assy2", "Assembly 2 Selection", 
                     choices = c("--", "Assembly 2A", "Assembly 2B", 
                                 "Assembly 2C")),
-        selectInput("Assy3", "Assembly 3 Options", 
+        selectInput("Assy3", "Assembly 3 Selection", 
                     choices = c("--", "Assembly 3A", "Assembly 3B", 
                                 "Assembly 3C")),
-        selectInput("Market", "Market", 
+        selectInput("Market", "Market Selection", 
                     choices = c("--", "Market 1", "Market 2"))
       ), 
       
@@ -181,13 +225,13 @@ ui <- fluidPage(
         condition = "input.Product == 'Product D'",
         numericInput("ModsHigh", "Modular Units High", value = 1, min = 1),
         numericInput("ModsWide", "Modular Units Wide", value = 1, min = 1),
-        selectInput("Assy1", "Assembly 1 Options", 
+        selectInput("Assy1", "Assembly 1 Selection", 
                     choices = c("--", "Assembly 1A", "Assembly 1B", 
                                 "Assembly 1C")),
-        selectInput("Assy2", "Assembly 2 Options", 
+        selectInput("Assy2", "Assembly 2 Selection", 
                     choices = c("--", "Assembly 2A", "Assembly 2B", 
                                 "Assembly 2C")),
-        selectInput("Market", "Market", 
+        selectInput("Market", "Market Selection", 
                     choices = c("--", "Market 1", "Market 2"))
       ), 
       
@@ -197,13 +241,13 @@ ui <- fluidPage(
         input.Product == 'Product F'",
         numericInput("ModsHigh", "Modular Units High", value = 1, min = 1),
         numericInput("ModsWide", "Modular Units Wide", value = 1, min = 1),
-        selectInput("Assy2", "Assembly 2 Options", 
+        selectInput("Assy2", "Assembly 2 Selection", 
                     choices = c("--", "Assembly 2A", "Assembly 2B", 
                                 "Assembly 2C")),
-        selectInput("Assy3", "Assembly 3 Options", 
+        selectInput("Assy3", "Assembly 3 Selection", 
                     choices = c("--", "Assembly 3A", "Assembly 3B", 
                                 "Assembly 3C")),
-        selectInput("Market", "Market", 
+        selectInput("Market", "Market Selection5", 
                     choices = c("--", "Market 1", "Market 2"))
       ), 
       
@@ -218,8 +262,8 @@ ui <- fluidPage(
       ### Reset Button ####
       div(style = "margin-top: 10px;",
           actionButton("resetBtn", "Reset Calculator",
-                       style = "width: 100%; background-color:#FF9933; 
-                          color:white; font-weight:bold;")
+                       style = "width: 100%; background-color:#FFCCE6; 
+                          color:grey; font-weight:bold;")
       ),
       tags$p(
         paste("Last updated:", format(last_updated, "%B %d, %Y")),
@@ -240,7 +284,33 @@ ui <- fluidPage(
           tableOutput("finalTable")
       )
     )
-  ) 
+  ), 
+  br(), br(),
+  
+  # Footer panel outside sidebarLayout
+  div(
+    style = paste0(
+      "background-color: #f8f9fa;",     # light grey
+      "border-top: 3px solid #FF46A2;", # thin line using banner color
+      "text-align: right;",
+      "padding: 30px 50px 50px 50px;",
+      "font-size: 14px;",
+      "color: #555;"
+    ),
+    "Trevor Pettit, 2026",
+    tags$br(),tags$br(),
+    tags$a("About This Project", 
+           href = "https://github.com/trevor-lyman/product-composition-calculator", 
+           target = "_blank", style = "margin-right: 8px;"),
+    tags$span("|", style = "margin: 0 8px; color: #555;"),
+    tags$a("GitHub", 
+           href = "https://github.com/trevor-lyman", target = "_blank", 
+           style = "margin-right: 8px;"),
+    tags$span("|", style = "margin: 0 8px; color: #555;"),
+    tags$a("LinkedIn", 
+           href = "https://www.linkedin.com/in/trevor-pettit-2b115a161/", 
+           target = "_blank")
+  )
 ) 
 
 # Build Server Logic ####
@@ -890,7 +960,10 @@ server <- function(input, output, session) {
       pivot_longer(cols = starts_with("Pct."), names_to = "Material", 
                    values_to = "PctComposition") %>%
       mutate(Material = gsub("Pct\\.", "", Material)) %>%
-      select(Material, PctComposition)
+      select(Material, PctComposition) %>%
+      mutate(Material = str_replace(Material, "(Material)(\\d+)", "\\1 \\2"))
+    
+    pie.data$Material[pie.data$Material == "Material1"] <- "Material 1"
     
     return(list(final = final, pie.data = pie.data))
   }
@@ -1033,13 +1106,25 @@ server <- function(input, output, session) {
     req(data())
     pie.data <- data()$pie.data
     
+    pie.data <- pie.data %>%
+      mutate(Material = case_when(
+        Material %in% c("Material1", "Material2", "Material3") ~ 
+          gsub("Material(\\d+)", "Material \\1", Material),
+        Material == "Other" ~ "Other Material",
+        Material == "Unevaluated" ~ "Unevaluated Material"
+      ),
+      Material = factor(Material, levels = c("Material 1", "Material 2", 
+                                             "Material 3", "Other Material", 
+                                             "Unevaluated Material"))
+      )
+    
     # Define fixed color mapping (same as before)
     material_colors <- c(
-      "Material1"    = "#FF69B4",
-      "Material2"       = "pink2",
-      "Material3"     = "pink3",
-      "Other"       = "pink4",
-      "Unevaluated" = "grey90"
+      "Material 1" = "#E60073",  
+      "Material 2" = "#FF46A2",  
+      "Material 3" = "#FF80BF",  
+      "Other Material" = "#FFB3D9",  
+      "Unevaluated Material" = "#FFCCE6"   
     )
     
     # Remove materials with 0% composition
@@ -1076,24 +1161,25 @@ server <- function(input, output, session) {
       )
     
     # Build the plot object
-    p <- ggplot(pie.data, aes(x = "", y = PctComposition, 
-                              fill = forcats::fct_inorder(Material))) +
-      geom_bar(stat = "identity", width = 1, color = "black", 
-               linewidth = 0.3) +
-      coord_polar("y") +
-      # Use only the colors that are present, avoids the warning
-      scale_fill_manual(values = material_colors[present_mats]) +
+    # Inside your plot code
+    p <- ggplot(pie.data, aes(x = "", y = PctComposition, fill = Material)) +
+      geom_col(width = 1) +
+      coord_polar(theta = "y") +
+      scale_fill_manual(
+        values = material_colors[present_mats]
+      ) +
       ggrepel::geom_label_repel(
         data = labels,
-        aes(y = pos, label = paste0(format(round(PctComposition, 2), 
-                                           nsmall = 1), "%")),
+        aes(y = pos, label = paste0(format(round(PctComposition, 2), nsmall = 1), "%")),
         size = 8, nudge_x = 1, show.legend = FALSE, color = "black"
       ) +
       guides(fill = guide_legend(title = "Material")) +
       theme_void(base_size = 28) +
       theme(legend.position = "top")
     
-    p
+    p + theme(legend.position = "top") +
+      guides(fill = guide_legend(title = "Material", nrow = 2, byrow = TRUE))
+    
   })
   
   # Render to screen
@@ -1102,24 +1188,37 @@ server <- function(input, output, session) {
   })
   
   ## Generate Table Output ####
-  output$finalTable <- renderTable(
-    {
-      req(data())
-      # list with $final from each branch:
-      #   return(list(final = final, pie.data = pie.data))
-      df <- data()$final
-      
-      preferred_order <- c(
-        "Product", "Part", "Qty", "Part.Wt", "Total.Wt",
-        "Kg.Material1", "Kg.Material2", "Kg.Material3", "Kg.Other", 
-        "Kg.Unevaluated"
-      )
-      keep <- intersect(preferred_order, names(df))
-      dplyr::select(df, dplyr::all_of(keep), dplyr::everything())
-    },
-    striped = TRUE, bordered = TRUE, hover = TRUE,
-    spacing = "xs", width = "100%", align = "lrrrrrrrrr"
-  )
+  output$finalTable <- renderTable({
+    req(data())
+    df <- data()$final
+    
+    # Reorder columns
+    preferred_order <- c(
+      "Product", "Part", "Qty", "Part.Wt", "Total.Wt",
+      "Kg.Material1", "Kg.Material2", "Kg.Material3", "Kg.Other", 
+      "Kg.Unevaluated"
+    )
+    keep <- intersect(preferred_order, names(df))
+    df <- dplyr::select(df, dplyr::all_of(keep), dplyr::everything())
+    
+    # Rename columns for display
+    df <- dplyr::rename(df,
+                        "Product" = "Product",
+                        "Part" = "Part",
+                        "Quantity" = "Qty",
+                        "Part Weight (kg)" = "Part.Wt",
+                        "Total Weight (kg)" = "Total.Wt",
+                        "Material 1 Weight (kg)" = "Kg.Material1",
+                        "Material 2 Weight (kg)" = "Kg.Material2",
+                        "Material 3 Weight (kg)" = "Kg.Material3",
+                        "Other Weight (kg)" = "Kg.Other",
+                        "Unevaluated Weight (kg)" = "Kg.Unevaluated"
+    )
+    
+    df
+  },
+  striped = TRUE, bordered = TRUE, hover = TRUE,
+  spacing = "xs", width = "100%", align = "lrrrrrrrrr")
   
   ## Build Plot Download Handler ####
   output$downloadPlot <- downloadHandler(
