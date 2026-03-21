@@ -5,7 +5,7 @@ Trevor Pettit
 1. App logic ✅
     
 2. App UI  ✅
-    > Add limits to mod inputs (100?)
+    > Add limits to mod inputs (100?) ✅
 
 3. Branding elements 
     > Color/theme 
@@ -15,6 +15,6 @@ Trevor Pettit
 5. Publish on rsconnect
     > Add rsconnect folder to GitIgnore ✅
 
-4. README
+4. README ✅
 
 5. LinkedIn post

@@ -159,8 +159,10 @@ ui <- fluidPage(
         condition = "input.Product == 'Product A' || 
         input.Product == 'Product B' || 
         input.Product == 'Product C' || input.Product == 'Product G'",
-        numericInput("ModsHigh", "Modular Units High", value = 1, min = 1),
-        numericInput("ModsWide", "Modular Units Wide", value = 1, min = 1),
+        numericInput("ModsHigh", "Modular Units High", value = 1, min = 1,
+                     max = 100),
+        numericInput("ModsWide", "Modular Units Wide", value = 1, min = 1,
+                     max = 100),
         selectInput("Assy1", "Assembly 1 Options", 
                     choices = c("--", "Assembly 1A", "Assembly 1B", 
                                 "Assembly 1C")),
@@ -1010,6 +1012,19 @@ server <- function(input, output, session) {
     
     # Reset flags for auto‑weight behavior
     userEditedWeight(FALSE)
+  })
+  
+  ## Force mods high and mods wide inputs to be < 100 ####
+  observeEvent(input$ModsHigh, {
+    if (!is.null(input$ModsHigh) && input$ModsHigh > 100) {
+      updateNumericInput(session, "ModsHigh", value = 100)
+    }
+  })
+  
+  observeEvent(input$ModsWide, {
+    if (!is.null(input$ModsWide) && input$ModsWide > 100) {
+      updateNumericInput(session, "ModsWide", value = 100)
+    }
   })
   
   ## Generate Pie Chart ####
