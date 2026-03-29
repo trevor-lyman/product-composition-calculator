@@ -1,5 +1,7 @@
 # Assembly-Based Product Composition Calculator
 
+# Check out the live app: https://tpettit3.shinyapps.io/product-composition-calculator/
+
 ## Overview
 
 This application is a **Shiny-based Product Composition Calculator** designed to estimate the material breakdown of a configurable, modular product. It provides users with a clear view of how different product configurations influence overall material composition, supporting more informed decision-making—particularly in sustainability and end-of-life planning contexts.
